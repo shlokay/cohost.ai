@@ -49,10 +49,12 @@ Whether you're an experienced host or just getting started, we've all faced that
 ## 🖼️ Screenshots
 
 ### 🎙️ Speaker Registration
-_Add a screenshot here (e.g., `static/speaker-registration.png`)_
+![image](https://github.com/user-attachments/assets/440e7cdc-86be-49ac-a190-de87d2472b5c)
+
 
 ### 💬 During Podcast Interface
-_Add a screenshot here (e.g., `static/live-session-ui.png`)_
+![image](https://github.com/user-attachments/assets/f9fed3ce-365f-45e1-8686-5e3dab92db23)
+
 
 ---
 
@@ -68,7 +70,6 @@ _Add a screenshot here (e.g., `static/live-session-ui.png`)_
 
 ## 🛠️ Setup Instructions
 
-1. Clone the repo:
-   ```bash
-   git clone https://github.com/yourusername/cohost.git
-   cd cohost
+1. Clone the repo
+2. install requirements from the file requirements.txt
+3. add your api_key 
