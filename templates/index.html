@@ -1,0 +1,207 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cohost.ai — Podcast Assistant</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Font Awesome for Microphone Icon -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+
+  <!-- Google Fonts for Calligraphy -->
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script&family=Great+Vibes&family=Shadows+Into+Light&family=Calligraffitti&display=swap" rel="stylesheet">
+
+  <style>
+    .question {
+      position: absolute;
+      white-space: nowrap;
+      opacity: 0;
+      animation: fadeIn 1s forwards;
+      transition: opacity 1s ease-in-out;
+    }
+
+    .fadeOut {
+      opacity: 0 !important;
+    }
+
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
+
+    .font-calligraphy-1 { font-family: 'Dancing Script', cursive; }
+    .font-calligraphy-2 { font-family: 'Great Vibes', cursive; }
+    .font-calligraphy-3 { font-family: 'Shadows Into Light', cursive; }
+    .font-calligraphy-4 { font-family: 'Calligraffitti', cursive; }
+
+    .mic-active {
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
+
+    /* Audio Bars */
+    .wave-container {
+      display: flex;
+      gap: 4px;
+      margin-top: 20px;
+    }
+
+    .bar {
+      width: 6px;
+      height: 20px;
+      background: white;
+      opacity: 0.6;
+      animation: bounce 1.2s infinite ease-in-out;
+    }
+
+    .bar:nth-child(2) { animation-delay: -1.1s; }
+    .bar:nth-child(3) { animation-delay: -1.0s; }
+    .bar:nth-child(4) { animation-delay: -0.9s; }
+    .bar:nth-child(5) { animation-delay: -0.8s; }
+
+    @keyframes bounce {
+      0%, 100% { height: 20px; }
+      50% { height: 40px; }
+    }
+
+    .hidden { display: none; }
+  </style>
+</head>
+
+<body class="h-screen w-screen flex overflow-hidden">
+  <!-- Left Half -->
+  <div class="w-1/2 h-full bg-black text-white flex flex-col items-center justify-center space-y-10">
+    <h1 class="text-5xl font-bold tracking-wide">Cohost.ai</h1>
+
+    <button id="micButton" class="text-6xl hover:text-red-500 transition-all">
+      <i id="micIcon" class="fas fa-microphone"></i>
+    </button>
+
+    <div id="waveform" class="wave-container hidden">
+      <div class="bar"></div>
+      <div class="bar"></div>
+      <div class="bar"></div>
+      <div class="bar"></div>
+      <div class="bar"></div>
+    </div>
+  </div>
+
+  <!-- Right Half -->
+  <div id="questionContainer" class="w-1/2 h-full relative overflow-hidden bg-white border-l border-gray-300"></div>
+
+  <script>
+    const micButton = document.getElementById("micButton");
+    const micIcon = document.getElementById("micIcon");
+    const questionContainer = document.getElementById("questionContainer");
+    const waveform = document.getElementById("waveform");
+
+    let isListening = false;
+    let activeQuestions = [];
+    let lastQuestions = new Set();
+
+    micButton.addEventListener("click", () => {
+      isListening = !isListening;
+      micIcon.classList.toggle("mic-active", isListening);
+      micIcon.classList.toggle("text-red-500", isListening);
+      waveform.classList.toggle("hidden", !isListening);
+      if (isListening) startFetchingFollowUps();
+    });
+
+    function startFetchingFollowUps() {
+      setInterval(async () => {
+        try {
+          const res = await fetch("/followups/");
+          if (!res.ok) return;
+          const data = await res.json();
+          const questions = data.questions || [];
+
+          for (const q of questions) {
+            if (!lastQuestions.has(q)) {
+              lastQuestions.add(q);
+              addFollowUp(q);
+            }
+          }
+
+          if (lastQuestions.size > 10) {
+            lastQuestions = new Set(Array.from(lastQuestions).slice(-10));
+          }
+
+        } catch (err) {
+          console.error("Error fetching follow-ups:", err);
+        }
+      }, 5000);
+    }
+
+    function addFollowUp(text) {
+      const div = document.createElement("div");
+      div.classList.add("question");
+
+      const fonts = ["font-calligraphy-1", "font-calligraphy-2", "font-calligraphy-3", "font-calligraphy-4"];
+      div.classList.add(fonts[Math.floor(Math.random() * fonts.length)]);
+      div.classList.add("text-gray-800");
+
+      const sizeRem = 2 + Math.random() * 1.5;
+      div.style.fontSize = `${sizeRem}rem`;
+      const angle = -3 + Math.random() * 6;
+      div.style.transform = `rotate(${angle}deg)`;
+
+      div.textContent = text;
+      questionContainer.appendChild(div);
+
+      requestAnimationFrame(() => {
+        const width = div.offsetWidth;
+        const height = div.offsetHeight;
+        let placed = false;
+        let attempt = 0;
+
+        while (!placed && attempt < 50) {
+          const x = Math.random() * (questionContainer.clientWidth - width - 20);
+          const y = Math.random() * (questionContainer.clientHeight - height - 20);
+          if (canPlace(x, y, width, height)) {
+            div.style.left = `${x}px`;
+            div.style.top = `${y}px`;
+            const timeout = setTimeout(() => removeFollowUp(div), 30000);
+            activeQuestions.push({ div, timeout });
+
+            if (activeQuestions.length > 3) {
+              const oldest = activeQuestions.shift();
+              removeFollowUp(oldest.div, oldest.timeout);
+            }
+
+            placed = true;
+          }
+          attempt++;
+        }
+
+        if (!placed) div.remove();
+      });
+    }
+
+    function canPlace(x, y, width, height) {
+      return activeQuestions.every(q => {
+        const rect = q.div.getBoundingClientRect();
+        return (
+          x + width < rect.left - questionContainer.offsetLeft ||
+          x > rect.right - questionContainer.offsetLeft ||
+          y + height < rect.top - questionContainer.offsetTop ||
+          y > rect.bottom - questionContainer.offsetTop
+        );
+      });
+    }
+
+    function removeFollowUp(div, timeout = null) {
+      if (timeout) clearTimeout(timeout);
+      div.classList.add("fadeOut");
+      setTimeout(() => div.remove(), 1000);
+    }
+  </script>
+</body>
+</html>
