@@ -1,0 +1,14 @@
+fastapi
+uvicorn
+jinja2
+python-multipart
+pydantic
+soundfile
+scipy
+numpy
+vosk
+torch==2.1.0  # or adjust based on compatibility with your system
+pyannote.audio==0.0.1  # matching the model training version
+groq
+ffmpeg-python
+python-dotenv
