@@ -1,0 +1,71 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Cohost.ai — Podcast Setup</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-black text-white min-h-screen flex items-center justify-center p-6">
+
+  <div class="w-full max-w-2xl bg-gray-900 rounded-xl shadow-lg p-8 border border-gray-700">
+
+    <!-- App Name Header -->
+    <h1 class="text-5xl font-extrabold text-center mb-6 text-white tracking-wide">
+      Cohost<span class="text-blue-500">.ai</span>
+    </h1>
+
+    <h2 class="text-2xl font-semibold mb-6 text-center text-gray-300">🎙️ Podcast Setup</h2>
+
+    <form id="contextForm" class="space-y-5">
+      <div>
+        <label class="block font-medium mb-1 text-gray-400">👤 Guest Name:</label>
+        <input type="text" name="guest_name" class="w-full bg-black border border-gray-700 text-white rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500" required>
+      </div>
+
+      <div>
+        <label class="block font-medium mb-1 text-gray-400">🧬 Guest Bio:</label>
+        <textarea name="guest_bio" class="w-full bg-black border border-gray-700 text-white rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500" required></textarea>
+      </div>
+
+      <div>
+        <label class="block font-medium mb-1 text-gray-400">🎯 Podcast Goal:</label>
+        <textarea name="podcast_goal" class="w-full bg-black border border-gray-700 text-white rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500" required></textarea>
+      </div>
+
+      <div>
+        <label class="block font-medium mb-1 text-gray-400">📚 Podcast Topic:</label>
+        <input type="text" name="podcast_topic" class="w-full bg-black border border-gray-700 text-white rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500" required>
+      </div>
+
+      <div>
+        <label class="block font-medium mb-1 text-gray-400">📝 Starter Questions (one per line):</label>
+        <textarea name="starter_questions" rows="4" class="w-full bg-black border border-gray-700 text-white rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500" required></textarea>
+      </div>
+
+      <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-lg transition">
+        ✅ Submit Context
+      </button>
+    </form>
+
+    <hr class="my-8 border-gray-700">
+
+    <h3 class="text-2xl font-semibold mb-4 text-center text-gray-300">🎤 Register Host Voice</h3>
+    <div class="flex flex-col items-center space-y-4">
+      <div class="flex gap-4">
+        <button onclick="startRecording()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition">
+          Start Recording
+        </button>
+        <button onclick="stopRecording()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition">
+          Stop & Save
+        </button>
+      </div>
+
+      <audio id="audioPlayer" controls class="mt-4 hidden w-full max-w-sm"></audio>
+      <p id="status" class="text-sm text-gray-400"></p>
+    </div>
+  </div>
+
+  <script src="/static/setup.js"></script>
+</body>
+</html>
