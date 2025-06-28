@@ -67,9 +67,4 @@ Whether you're an experienced host or just getting started, we've all faced that
 - **LLM**: Meta LLaMA 4 (via Groq API)
 
 ---
-
-## 🛠️ Setup Instructions
-
-1. Clone the repo
-2. install requirements from the file requirements.txt
-3. add your api_key 
+ ps: This app is currently in the development phase, your valuable contributions are heartly welcome!
